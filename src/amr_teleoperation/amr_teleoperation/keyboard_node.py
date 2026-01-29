@@ -11,10 +11,10 @@ class KeyboardNode(Node):
 
     def __init__(self) -> None:
         # Inicializa la clase base Node con el nombre del nodo
-        super().__init__("minimal_publisher")
+        super().__init__("keyboard")
 
         # Configuración del Publisher
-        self._publisher = self.create_publisher(msg_type=Key, topic="keyboard", qos_profile=10)
+        self._publisher = self.create_publisher(msg_type=Key, topic="key", qos_profile=10)
 
         listen_keyboard(on_press=self._listen_keyboard_callback, sequential=True)
 
