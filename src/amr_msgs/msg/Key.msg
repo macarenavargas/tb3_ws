@@ -1,1 +1,1 @@
-string Key_input
+string key_input
