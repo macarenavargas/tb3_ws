@@ -6,29 +6,31 @@ from sshkeyboard import listen_keyboard
 
 class KeyboardNode(Node):
     """
-    Nodo publicador simple que envía un mensaje 'Hello, World!' cada 500ms.
+    Publisher node that sends a message "Publishing : {key_input}" when a key is pressed. 
     """
 
     def __init__(self) -> None:
-        # Inicializa la clase base Node con el nombre del nodo
+        # initilize the constructor 
         super().__init__("keyboard")
 
-        # Configuración del Publisher
+        # configutation of publisher 
         self._publisher = self.create_publisher(msg_type=Key, topic="key", qos_profile=10)
 
+        # we receive if a key is pressed 
         listen_keyboard(on_press=self._listen_keyboard_callback, sequential=True)
 
     def _listen_keyboard_callback(self, key) -> None:
         """
-        Función que se ejecuta periódicamente para publicar el mensaje.
+        Callback that is executed to publish the string of the pressed key 
         """
         msg = Key()
         msg.key_input = key
 
-        # Publica el mensaje en el tópico
+  
+        # publish the message in the topic 
         self._publisher.publish(msg)
 
-        # Muestra el mensaje en la terminal del contenedor
+        # shows the message in terminal also 
         self.get_logger().info(f"Publishing: {msg.key_input}")
 
 
