@@ -52,38 +52,37 @@ class WallFollowerNode(LifecycleNode):
 
             # Publishers
             self._publisher_cmd_vel = self.create_publisher(
-            msg_type=TwistStamped, topic="/cmd_vel", qos_profile=10)
-            
+                msg_type=TwistStamped, topic="/cmd_vel", qos_profile=10
+            )
+
             # Subscribers
             # TODO: 2.7. Synchronize _compute_commands_callback with /odometry and /scan.
             qos_profile = QoSProfile(
                 history=QoSHistoryPolicy.KEEP_LAST,
-                depth=10, 
+                depth=10,
                 reliability=QoSReliabilityPolicy.BEST_EFFORT,
                 durability=QoSDurabilityPolicy.VOLATILE,
             )
 
-            self._subscribers : list [ message_filters . Subscriber ] = []
+            self._subscribers: list[message_filters.Subscriber] = []
             # Append as many topics as needed
 
             self._subscribers.append(
-                message_filters.Subscriber (self, Odometry,'/odometry', qos_profile = qos_profile))
-            
+                message_filters.Subscriber(self, Odometry, "/odometry", qos_profile=qos_profile)
+            )
+
             self._subscribers.append(
-                message_filters.Subscriber (self, LaserScan, '/scan', qos_profile = qos_profile))
-            
-            ts = message_filters.ApproximateTimeSynchronizer (
-                self._subscribers,
-                queue_size =10,
-                slop = 9 ) # we will have to change slop to a lower value for the real robot 
-            
-            ts.registerCallback (self._compute_commands_callback )
+                message_filters.Subscriber(self, LaserScan, "/scan", qos_profile=qos_profile)
+            )
 
+            ts = message_filters.ApproximateTimeSynchronizer(
+                self._subscribers, queue_size=10, slop=9
+            )  # we will have to change slop to a lower value for the real robot
 
-
+            ts.registerCallback(self._compute_commands_callback)
 
             # TODO: 4.12. Add /pose to the synced subscriptions only if localization is enabled.
-            
+
         except Exception:
             self.get_logger().error(f"{traceback.format_exc()}")
             return TransitionCallbackReturn.ERROR
@@ -118,7 +117,7 @@ class WallFollowerNode(LifecycleNode):
             # TODO: 2.8. Parse the odometry from the Odometry message (i.e., read z_v and z_w).
             z_v: float = odom_msg.twist.twist.linear.x
             z_w: float = odom_msg.twist.twist.angular.z
-            
+
             # TODO: 2.9. Parse LiDAR measurements from the LaserScan message (i.e., read z_scan).
             z_scan: list[float] = scan_msg.ranges
 
@@ -138,16 +137,15 @@ class WallFollowerNode(LifecycleNode):
 
         """
         # TODO: 2.11. Complete the function body with your code (i.e., replace the pass statement).
-        
+
         # we will have to modify this when transfering it to the real robot
         msg = TwistStamped()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.twist.linear.x = v
         msg.twist.angular.z = w
 
+        self._publisher_cmd_vel.publish(msg)
 
-        
-        
 
 def main(args=None):
     rclpy.init(args=args)
