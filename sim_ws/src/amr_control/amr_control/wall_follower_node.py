@@ -49,6 +49,8 @@ class WallFollowerNode(LifecycleNode):
 
             # Publishers
             # TODO: 2.10. Create the /cmd_vel velocity commands publisher (TwistStamped message).
+
+
             
             # Subscribers
             # TODO: 2.7. Synchronize _compute_commands_callback with /odometry and /scan.
@@ -61,19 +63,12 @@ class WallFollowerNode(LifecycleNode):
 
             self._subscribers : list [ message_filters . Subscriber ] = []
             # Append as many topics as needed
+
             self._subscribers.append(
-                message_filters.Subscriber (
-                self,
-                msg_type = LaserScan,
-                topic_name = '/scan',
-                qos_profile = qos_profile))
+                message_filters.Subscriber (self, Odometry,'/odometry', qos_profile = qos_profile))
             
             self._subscribers.append(
-                message_filters.Subscriber (
-                self,
-                msg_type = Odometry,
-                topic_name = '/odometry',
-                qos_profile = qos_profile))
+                message_filters.Subscriber (self, LaserScan, '/scan', qos_profile = qos_profile))
             
             ts = message_filters.ApproximateTimeSynchronizer (
                 self._subscribers,
